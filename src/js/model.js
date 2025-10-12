@@ -25,6 +25,16 @@ export const loadRecipe = async function (id) {
   } catch (err) {
     // Temp error handling
     // console.error(`${err}`);
-    alert(err);
+    throw err;
+  }
+};
+
+export const loadSearchResults = async function (query) {
+  try {
+    const data = await getJSON(
+      `https://forkify-api.jonas.io/api/v2/recipes?search=pizza`
+    );
+  } catch (err) {
+    throw err;
   }
 };

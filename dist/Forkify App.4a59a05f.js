@@ -735,6 +735,7 @@ const controlRecipes = async function() {
         (0, _recipeViewJsDefault.default).render(_modelJs.state.recipe);
     } catch (err) {
         alert(err);
+        (0, _recipeViewJsDefault.default).renderError();
     }
 };
 const init = function() {
@@ -2030,6 +2031,7 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "state", ()=>state);
 parcelHelpers.export(exports, "loadRecipe", ()=>loadRecipe);
+parcelHelpers.export(exports, "loadSearchResults", ()=>loadSearchResults);
 var _configJs = require("./config.js");
 var _helpersJs = require("./helpers.js");
 const state = {
@@ -2053,7 +2055,14 @@ const loadRecipe = async function(id) {
     } catch (err) {
         // Temp error handling
         // console.error(`${err}`);
-        alert(err);
+        throw err;
+    }
+};
+const loadSearchResults = async function(query) {
+    try {
+        const data = await (0, _helpersJs.getJSON)(`https://forkify-api.jonas.io/api/v2/recipes?search=pizza`);
+    } catch (err) {
+        throw err;
     }
 };
 
@@ -2063,7 +2072,7 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "API_URL", ()=>API_URL);
 parcelHelpers.export(exports, "TIMEOUT_SEC", ()=>TIMEOUT_SEC);
 const API_URL = 'https://forkify-api.jonas.io/api/v2/recipes';
-const TIMEOUT_SEC = 1000;
+const TIMEOUT_SEC = 1000; // export const API = 'https://forkify-api.jonas.io/api/v2/recipes?search=pizza';
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"jnFvT"}],"7nL9P":[function(require,module,exports,__globalThis) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -2103,6 +2112,8 @@ console.log((0, _fractyDefault.default));
 class RecipeView {
     #parentElement = document.querySelector('.recipe');
     #data;
+    #errorMessage = 'We could not find the recipe. Please try another one!';
+    #successMessage = '';
     render(data) {
         this.#data = data;
         const markup = this.#generateMarkup();
@@ -2123,12 +2134,26 @@ class RecipeView {
         this.#clear();
         this.#parentElement.insertAdjacentHTML('afterbegin', markup);
     }
-    renderError(message) {
+    renderError(message = this.#errorMessage) {
         const markup = `
       <div class="error">
         <div>
           <svg>
             <use href="${(0, _iconsSvgDefault.default)}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+        this.#clear();
+        this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+    }
+    renderSuccessMessage(message = this.#successMessage) {
+        const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${(0, _iconsSvgDefault.default)}#icon-smile"></use>
           </svg>
         </div>
         <p>${message}</p>
